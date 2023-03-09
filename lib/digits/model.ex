@@ -38,6 +38,7 @@ defmodule Digits.Model do
     |> Axon.Loop.run(training_data, compiler: EXLA, epochs: 10)
   end
 
+  @spec test(tuple | Axon.t(), any, any) :: any
   def test(model, state, test_data) do
     model
     |> Axon.Loop.evaluator(state)
@@ -62,11 +63,11 @@ defmodule Digits.Model do
   end
 
   def predict(path) do
-    {:ok, mat} = Evision.imread(path, flags: Evision.cv_IMREAD_GRAYSCALE)
-    {:ok, mat} = Evision.resize(mat, [28, 28])
+    mat = Evision.imread(path, flags: Evision.cv_IMREAD_GRAYSCALE())
+    mat = Evision.resize(mat, {28, 28})
 
     data =
-      Evision.Nx.to_nx(mat)
+      Evision.Mat.to_nx(mat)
       |> Nx.reshape({1, 28, 28})
       |> List.wrap()
       |> Nx.stack()
